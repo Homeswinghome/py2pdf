@@ -49,6 +49,7 @@
 
 # import
 import os # for py2pdf
+import subprocess # for py2pdf with bash with alias
 import matplotlib.pyplot as plt # for the demo
 import numpy as np # for the demo
 #~~ ```
@@ -93,10 +94,14 @@ print_twice(logfile, "Logfile : ", logfile)
 #Some more lines here 
 #~~./...
 # prepare the command to launch the report creation
-cmd = "./py2pdf.sh " + scriptname
+# cmd = "./py2pdf " + scriptname # for a local bash
+# cmd = "~/0_scripts/py2pdf " + scriptname # for a bash in directory in home
+cmd = "py2pdf " + scriptname # alias
+
 
 # code for console output demo
 print_twice(logfile, "launch command : ",cmd) # for demo
 print_twice(logfile, "pdf should be available soon") # for demo
 # launch the report creation
-os.system(cmd) # to launch the bash file (copy, preprocessing, pandoc to pdf)
+# os.system(cmd) # to launch the bash file (local or directory in home)
+subprocess.call(['/bin/bash', '-i', '-c', cmd]) # to launch the bash file (alias)

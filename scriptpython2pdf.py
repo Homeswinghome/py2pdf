@@ -99,9 +99,10 @@
 #~~ 
 #~~ Some code is also needed to store the desired matplotlib graphs.
 #~~ 
-#~~ The command lines are embedded in a bash file called at the end of the script. In this example the bash file is in the same directory than the python script. For a more productive configuration, the bash file might be located in one directory, an alias added in ".bashrc". The call to script is then :
-#~~ ```
-#~~ py2pdf scriptname
+#~~ The command lines are embedded in a bash file called at the end of the script. The bash file can be in the same directory than the python script. For a more productive configuration, the bash file might be located in one directory, an alias added in ".bashrc". The call to script is then :
+#~~ ```python
+#~~ cmd = "py2pdf scriptname"
+#~~ subprocess.call(['/bin/bash', '-i', '-c', cmd])
 #~~ ```
 #~~ "py2pdf" being the alias.
 #~~ 
@@ -124,7 +125,7 @@
 #~~ 
 #~~ Some lines from scriptpython2pdf.py :
 #~~ 
-#~~ ```python
+#~~ ```
 #~~ ![[scriptpython2pdf_extract.py]]
 #~~ ```
 #~~ 
@@ -135,6 +136,7 @@
 
 # import
 import os # for py2pdf
+import subprocess # for py2pdf with bash with alias
 import matplotlib.pyplot as plt # for the demo
 import numpy as np # for the demo
 #~~ ```
@@ -215,13 +217,16 @@ plt.show()
 logfile = "./py2pdf_files/loglast.txt" # define the logfile
 clearlog(logfile) # clear the logfile (in case script is ran several times)
 # prepare the command to launch the report creation
-cmd = "./py2pdf.sh " + scriptname
+# cmd = "./py2pdf " + scriptname # for a local bash
+# cmd = "~/0_scripts/py2pdf " + scriptname # for a bash in directory in home
+cmd = "py2pdf " + scriptname # alias
 
 # code for console output demo
 print_twice(logfile, "launch command : ",cmd) # for demo
 print_twice(logfile, "pdf should be available soon") # for demo
 # launch the report creation
-os.system(cmd) # to launch the bash file (copy, preprocessing, pandoc to pdf)
+# os.system(cmd) # to launch the bash file (local or directory in home)
+subprocess.call(['/bin/bash', '-i', '-c', cmd]) # to launch the bash file (alias)
 #~~ ```
 #~~ **/!\\WARNING : no output after this line can be recorded automatically**
 #~~ ```python
