@@ -10,7 +10,6 @@
 #~~ geometry:
 #~~ - margin = 2cm
 #~~ - a4paper
-#~~ fontsize: 15pt
 #~~ toc: true
 #~~ toc_depth: 2
 #~~ numbersections: true
@@ -24,7 +23,7 @@
 #~~ 
 #~~ So I came to this solution, probably with a lower performance but that uses standard tools, explicit rather simple steps.
 #~~ 
-#~~ # How it works?
+#~~ # How does it work?
 #~~ 
 #~~ ## The features
 #~~ 
@@ -57,26 +56,25 @@
 #~~ 
 #~~ The markdown file is then transformed in pdf with pandoc
 #~~ 
-#~~ ## The sources of this solution
+#~~ ## The sources of inspiration
 #~~ 
 #~~ The idea of a mark "#%%" comes from pweave, spyder to embedded markdown in the python script.
 #~~ 
 #~~ The first test shown that with, at least, a French keyboard this sequence is hard to use (need AltGr then shift) and is visually intrusive in editor. Several "#" are not allowed (used by markdown) so I changed to "#~~" as "~" is next key on the left of "#".
 #~~ 
 #~~ 
-#~~ The script "filename.py" is copied into an image markdown file "filename.md"
+#~~ The script filename.py is copied into an image markdown file temp.md
 #~~ 
 #~~ A call to "sed" can remove the 2 first lines and the mark.
 #~~ ```
-#~~ sed -i '1,2d' filename.md
-#~~ sed -i -e 's/abc/XYZ/g' filename.md
+#~~ sed -i '1,2d' temp.md
+#~~ sed -i -e 's/abc/XYZ/g' temp.md
 #~~ ```
 #~~ A "magic" call to perl can insert external text files. It is proposed by stackoverflow ie  [Embedding one markdown document in another](https://stackoverflow.com/questions/18438907/embedding-one-markdown-document-in-another/18517316#18517316)
 #~~ ```
-#~~ #!/usr/bin/env bash
-#~~ perl -ne 's/^!\[\[(.+?)\]\].*/`cat $1`/e;print' source.md > result.md
+#~~ perl -ne 's/^!\[\[(.+?)\]\].*/`cat $1`/e;print' temp.md > filename.md
 #~~ ```
-#~~ All the found \![[textfilepath]] in source.md will be replaced by the textfilepath file content in result.md
+#~~ All the found \![[textfilepath]] in temp.md will be replaced by the textfilepath file content in result.md
 #~~ 
 #~~ This method can be applied to subpart of the file like the header to get more compact script or any other text file to share like a bash file.
 #~~ 
@@ -84,11 +82,16 @@
 #~~ ```
 #~~ pandoc -s -o filename.pdf filename.md
 #~~ ```
+#~~ The intermediate files temp.md, filename.md are delated. The filename.md may be kept for debug or further operation; for that comment the line "rm..." in the bash file.
+#~~ 
 #~~ There are probably more interesting options of pandoc to use... This will be another task
 #~~ 
 #~~ -[] TODO explore pandoc to pdf options.
 #~~ 
-#~~ ## What is missing for a full magic
+#~~ ## What is missing for the magic complete
+#~~ 
+#~~ 
+#~~ ### Code to be added
 #~~ 
 #~~ Some code lines are added to prepare the structure : a directory "py2pdf_files" is created to store the output files.
 #~~ 
@@ -96,9 +99,34 @@
 #~~ 
 #~~ Some code is also needed to store the desired matplotlib graphs.
 #~~ 
+#~~ The command lines are embedded in a bash file called at the end of the script. In this example the bash file is in the same directory than the python script. For a more productive configuration, the bash file might be located in one directory, an alias added in ".bashrc". The call to script is then :
+#~~ ```
+#~~ py2pdf scriptname
+#~~ ```
+#~~ "py2pdf" being the alias.
+#~~ 
+#~~ Then in the ".bashrc" file :
+#~~ ```bash
+#~~ # my scripts
+#~~ p="$HOME/0_myscripts/" # or any other path to your scripts
+#~~ alias py2pdf="$p/py2pdf"
+#~~ ```
+#~~ 
 #~~ ### Resources
 #~~ * pandoc : [pandoc.org](https://pandoc.org/)
 #~~ * python, bash, perl : standard of Linux distribution?
+#~~ 
+#~~ ### Github repository
+#~~ 
+#~~ The files are under Github [Homeswinghome/py2pdf](https://github.com/Homeswinghome/py2pdf)
+#~~ 
+#~~ ## What does the python script looks like ?
+#~~ 
+#~~ Some lines from scriptpython2pdf.py :
+#~~ 
+#~~ ```python
+#~~ ![[scriptpython2pdf_extract.py]]
+#~~ ```
 #~~ 
 #~~ # python code
 #~~ 
@@ -161,6 +189,8 @@ print_twice(logfile, "Logfile : ", logfile)
 #~~ ```
 #~~ ### Code section 2
 #~~ From matplotlib site  : [Simple plot](https://matplotlib.org/stable/gallery/lines_bars_and_markers/simple_plot.html#sphx-glr-gallery-lines-bars-and-markers-simple-plot-py)
+#~~ This simple example plots the signal :
+#~~ $$ s = 1 + sin(2.\pi.t) $$
 #~~ ```python
 # code for matplotlib output demo
 # Data for plotting
@@ -185,7 +215,7 @@ plt.show()
 logfile = "./py2pdf_files/loglast.txt" # define the logfile
 clearlog(logfile) # clear the logfile (in case script is ran several times)
 # prepare the command to launch the report creation
-cmd = "./py2md.sh " + scriptname
+cmd = "./py2pdf.sh " + scriptname
 
 # code for console output demo
 print_twice(logfile, "launch command : ",cmd) # for demo
@@ -202,8 +232,10 @@ print("Hurra the pdf is created!")
 #~~ ![[./py2pdf_files/loglast.txt]]
 #~~ ```
 #~~ ### Code of the bash file
+#~~ 
+#~~ py2pdf.sh
 #~~ ```
-#~~ ![[py2md.sh]]
+#~~ ![[py2pdf.sh]]
 #~~ ```
 #~~ ## Additional output
 #~~ 
